@@ -432,7 +432,7 @@ RCT_EXPORT_METHOD(getPendingTransactions:(RCTPromiseResolveBlock)resolve
             case SKPaymentTransactionStateFailed: {
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                if #available(iOS 14, *) {
+                if !#available(iOS 14, *) {
                     NSString *key = RCTKeyForInstance(transaction.payment.productIdentifier);
                 }
                 dispatch_sync(myQueue, ^{
