@@ -155,9 +155,10 @@ RCT_EXPORT_METHOD(buyProduct:(NSString*)sku
         }
     }
     if (product) {
-        if #available(iOS 14, *) {
+        if (@available(iOS 14, *)) {
             [self addPromiseForKey:product.productIdentifier resolve:resolve reject:reject];
         } else {
+            NSString *key = RCTKeyForInstance(product.productIdentifier);
             [self addPromiseForKey:key resolve:resolve reject:reject];
         }
             
@@ -194,7 +195,7 @@ RCT_EXPORT_METHOD(buyProductWithOffer:(NSString*)sku
         }
     }
     if (product) {
-        if #available(iOS 14, *) {
+        if (@available(iOS 14, *)) {
             [self addPromiseForKey:product.productIdentifier resolve:resolve reject:reject];
         } else {
             NSString *key = RCTKeyForInstance(product.productIdentifier);
@@ -432,9 +433,7 @@ RCT_EXPORT_METHOD(getPendingTransactions:(RCTPromiseResolveBlock)resolve
             case SKPaymentTransactionStateFailed: {
                 NSLog(@"\n\n\n\n\n\n Purchase Failed  !! \n\n\n\n\n");
                 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-                if !#available(iOS 14, *) {
-                    NSString *key = RCTKeyForInstance(transaction.payment.productIdentifier);
-                }
+                NSString *key = RCTKeyForInstance(transaction.payment.productIdentifier);
                 dispatch_sync(myQueue, ^{
                     if (hasListeners) {
                         NSString *responseCode = [@(transaction.error.code) stringValue];
@@ -448,7 +447,7 @@ RCT_EXPORT_METHOD(getPendingTransactions:(RCTPromiseResolveBlock)resolve
                                              ];
                         [self sendEventWithName:@"purchase-error" body:err];
                     }
-                    if #available(iOS 14, *) {
+                    if (@available(iOS 14, *)) {
                         [self rejectPromisesForKey:transaction.payment.productIdentifier code:[self standardErrorCode:(int)transaction.error.code]
                                            message:transaction.error.localizedDescription
                                              error:transaction.error];
@@ -504,10 +503,15 @@ RCT_EXPORT_METHOD(getPendingTransactions:(RCTPromiseResolveBlock)resolve
         pendingTransactionWithAutoFinish = false;
     }
     [self getPurchaseData:transaction withBlock:^(NSDictionary *purchase) {
-        if #available(iOS 14, *) {
+        if (@available(iOS 14, *)) {
             [self resolvePromisesForKey:transaction.payment.productIdentifier value:purchase];
         } else {
             [self resolvePromisesForKey:RCTKeyForInstance(transaction.payment.productIdentifier) value:purchase];
+        }
+        if (@available(iOS 9, *)) {
+            // use UIStackView
+        } else {
+            // show sad face emoji
         }
 
         // additionally send event
