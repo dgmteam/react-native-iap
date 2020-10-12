@@ -508,11 +508,6 @@ RCT_EXPORT_METHOD(getPendingTransactions:(RCTPromiseResolveBlock)resolve
         } else {
             [self resolvePromisesForKey:RCTKeyForInstance(transaction.payment.productIdentifier) value:purchase];
         }
-        if (@available(iOS 9, *)) {
-            // use UIStackView
-        } else {
-            // show sad face emoji
-        }
 
         // additionally send event
         if (self->hasListeners) {
